@@ -1,0 +1,9 @@
+[package]
+name = "pts_board"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1.47.1", features = ["macros", "rt", "rt-multi-thread"] }
+axum = "0.8.4"
+sea-orm = { version = "1.1.16", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono"] }

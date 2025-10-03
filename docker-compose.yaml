@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:17.6-alpine3.22
+    container_name: pts_board_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: qwe123
+      POSTGRES_DB: database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+    driver: local
