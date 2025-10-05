@@ -16,7 +16,7 @@ impl MigrationTrait for Migration {
                     .col(string_null(Board::Name))
                     .col(string_null(Board::Description))
                     .col(big_integer_null(Board::MaxThreads))
-                    .col(date_null(Board::CreatedAt))
+                    .col(date_null(Board::CreatedAt).default(Expr::current_timestamp()))
                     .to_owned(),
             )
             .await

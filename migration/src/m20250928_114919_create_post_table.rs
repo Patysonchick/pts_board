@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
                             .to(Thread::Table, Thread::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
-                    .col(integer(Post::ParentId))
+                    .col(integer_null(Post::ParentId))
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-post-parent_id")
@@ -30,7 +30,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(string_null(Post::Title))
                     .col(string(Post::Text))
-                    .col(timestamp(Post::CreatedAt))
+                    .col(timestamp(Post::CreatedAt).default(Expr::current_timestamp()))
                     .col(string(Post::Password))
                     .to_owned(),
             )

@@ -23,10 +23,10 @@ impl MigrationTrait for Migration {
                     )
                     .col(string_null(Thread::Title))
                     .col(string(Thread::Text))
-                    .col(boolean(Thread::IsPinned))
-                    .col(boolean(Thread::IsClosed))
-                    .col(timestamp(Thread::CreatedAt))
-                    .col(timestamp(Thread::BumpedAt))
+                    .col(boolean(Thread::IsPinned).default(false))
+                    .col(boolean(Thread::IsClosed).default(false))
+                    .col(timestamp(Thread::CreatedAt).default(Expr::current_timestamp()))
+                    .col(timestamp(Thread::BumpedAt).default(Expr::current_timestamp()))
                     .to_owned(),
             )
             .await

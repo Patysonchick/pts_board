@@ -10,4 +10,6 @@ members = [".", "migration"]
 tokio = { version = "1.47.1", features = ["macros", "rt", "rt-multi-thread"] }
 axum = "0.8.6"
 sea-orm = { version = "1.1.16", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono"] }
+serde = { version = "1.0.228", features = ["derive"] }
 chrono = "0.4.42"
+rand = "0.9.2"
