@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru_RU">
+<head>
+    <meta charset="utf-8">
+    <title>Board - pts_board</title>
+</head>
+<body>
+<h1>Boards list:</h1>
+<table>
+    {% for board in boards %}
+    <tr>
+        <td>{{ board.id }}</td>
+        <td href="/{{ board.uri }}/">/{{ board.uri }}/</td>
+
+        {% if let Some(name) = &board.name %}
+        <td>{{ name }}</td>
+        {% else %}
+        <td></td>
+        {% endif %}
+
+        {% if let Some(description) = &board.description %}
+        <td>{{ description }}</td>
+        {% else %}
+        <td></td>
+        {% endif %}
+
+        {% if let Some(max_threads) = &board.max_threads %}
+        <td>{{ max_threads }}</td>
+        {% else %}
+        <td></td>
+        {% endif %}
+
+        {% if let Some(created_at) = &board.created_at %}
+        <td>{{ created_at }}</td>
+        {% else %}
+        <td></td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

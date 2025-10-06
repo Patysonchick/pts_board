@@ -1,9 +1,11 @@
 mod create_post;
 mod create_thread;
 mod entity;
+mod index;
 
 use crate::create_post::create_post;
 use crate::create_thread::create_thread;
+use crate::index::{index, list_boards};
 use axum::{
     Router,
     routing::{get, post},
@@ -24,7 +26,8 @@ async fn main() {
     };
 
     let app = Router::new()
-        .route("/", get(|| async { "Hello there!" }))
+        .route("/", get(index))
+        .route("/boards", get(list_boards))
         .route("/create_thread", post(create_thread))
         .route("/create_post", post(create_post))
         .with_state(shared_state);
