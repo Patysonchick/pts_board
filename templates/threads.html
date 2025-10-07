@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru_RU">
+<head>
+    <meta charset="utf-8">
+    <title>/{{ board_uri }}/ - pts_board</title>
+</head>
+<body>
+{% if let Some(board_name) = board_name %}
+<h1>/{{ board_uri }}/ - {{ board_name }}</h1>
+{% else %}
+<h1>/{{ board_uri }}/</h1>
+{% endif %}
+
+{% for thread in threads %}
+<div class="thread">
+    {{ thread.text }}
+</div>
+{% endfor %}
+
+</body>
+</html>
