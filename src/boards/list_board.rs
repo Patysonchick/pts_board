@@ -5,7 +5,7 @@ use axum::extract::{Path, State};
 use axum::response::Html;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 
-#[derive(Template)] // this will generate the code...
+#[derive(Template)]
 #[template(path = "threads.html")]
 struct ThreadsTemplate {
     board_uri: String,
@@ -21,8 +21,6 @@ pub async fn list(State(state): State<AppState>, Path(board_uri): Path<String>) 
         .await
         .unwrap()
         .unwrap();
-
-    println!("Found board id - {}", board.id);
 
     // TODO! на всякий проверить что будет с пустым массивом
     let threads: Vec<thread::Model> = thread::Entity::find()

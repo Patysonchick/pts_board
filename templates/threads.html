@@ -13,9 +13,12 @@
 
 {% for thread in threads %}
 <div class="thread">
+    {% if let Some(thread_title) = thread.title %}
+    <h2>{{ thread_title }}</h2>
+    {% endif %}
+
     {{ thread.text }}
 </div>
 {% endfor %}
-
 </body>
 </html>
