@@ -1,5 +1,3 @@
-pub mod list_board;
-
 use crate::AppState;
 use crate::entity::board;
 use askama::Template;
