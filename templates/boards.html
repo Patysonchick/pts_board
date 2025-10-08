@@ -15,25 +15,25 @@
         {% if let Some(name) = board.name %}
         <td>{{ name }}</td>
         {% else %}
-        <td>lt;nullgt;</td>
+        <td>&lt;null&gt;</td>
         {% endif %}
 
         {% if let Some(description) = board.description %}
         <td>{{ description }}</td>
         {% else %}
-        <td>lt;nullgt;</td>
+        <td>&lt;null&gt;</td>
         {% endif %}
 
         {% if let Some(max_threads) = board.max_threads %}
         <td>{{ max_threads }}</td>
         {% else %}
-        <td>lt;nullgt;</td>
+        <td>&lt;null&gt;</td>
         {% endif %}
 
         {% if let Some(created_at) = board.created_at %}
         <td>{{ created_at }}</td>
         {% else %}
-        <td>lt;nullgt;</td>
+        <td>&lt;null&gt;</td>
         {% endif %}
     </tr>
     {% endfor %}

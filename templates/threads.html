@@ -11,13 +11,23 @@
 <h1>/{{ board_uri }}/</h1>
 {% endif %}
 
-{% for thread in threads %}
+{% for thread_posts in threads_posts %}
 <div class="thread">
-    {% if let Some(thread_title) = thread.title %}
+    {% if let Some(thread_title) = thread_posts.thread.title %}
     <h2>{{ thread_title }}</h2>
     {% endif %}
 
-    {{ thread.text }}
+    <p>{{ thread_posts.thread.text }}</p>
+
+    {% for post in thread_posts.posts %}
+    <div class="post">
+        {% if let Some(title) = post.title %}
+        <h3>{{ title }}</h3>
+        {% endif %}
+
+        <p>{{ post.text }}</p>
+    </div>
+    {% endfor %}
 </div>
 {% endfor %}
 </body>

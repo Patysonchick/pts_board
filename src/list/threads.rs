@@ -1,5 +1,5 @@
 use crate::AppState;
-use crate::entity::{board, thread};
+use crate::entity::{board, post, thread};
 use askama::Template;
 use axum::extract::{Path, State};
 use axum::response::Html;
@@ -10,7 +10,12 @@ use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 struct ThreadsTemplate {
     board_uri: String,
     board_name: Option<String>,
-    threads: Vec<thread::Model>,
+    threads_posts: Vec<ThreadPosts>,
+}
+
+struct ThreadPosts {
+    thread: thread::Model,
+    posts: Vec<post::Model>,
 }
 
 pub async fn list(State(state): State<AppState>, Path(board_uri): Path<String>) -> Html<String> {
@@ -22,17 +27,22 @@ pub async fn list(State(state): State<AppState>, Path(board_uri): Path<String>) 
         .unwrap()
         .unwrap();
 
-    // TODO! на всякий проверить что будет с пустым массивом
-    let threads: Vec<thread::Model> = thread::Entity::find()
+    let threads_posts: Vec<(thread::Model, Vec<post::Model>)> = thread::Entity::find()
         .filter(thread::Column::BoardId.eq(board.id))
+        .find_with_related(post::Entity)
         .all(&state.db)
         .await
         .unwrap();
 
+    let threads_posts = threads_posts
+        .into_iter()
+        .map(|(thread, posts)| ThreadPosts { thread, posts })
+        .collect();
+
     let template = ThreadsTemplate {
         board_uri,
         board_name: board.name,
-        threads,
+        threads_posts,
     };
     Html(template.render().unwrap())
 }
