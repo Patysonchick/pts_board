@@ -10,7 +10,8 @@
     {% for board in boards %}
     <tr>
         <td>{{ board.id }}</td>
-        <td href="/{{ board.uri }}/">/{{ board.uri }}/</td>
+
+        <td><a href="/{{ board.uri }}">/{{ board.uri }}/</a></td>
 
         {% if let Some(name) = board.name %}
         <td>{{ name }}</td>
