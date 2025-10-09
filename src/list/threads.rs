@@ -8,8 +8,7 @@ use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 #[derive(Template)]
 #[template(path = "threads.html")]
 struct ThreadsTemplate {
-    board_uri: String,
-    board_name: Option<String>,
+    board: board::Model,
     threads_posts: Vec<ThreadPosts>,
 }
 
@@ -40,8 +39,7 @@ pub async fn list(State(state): State<AppState>, Path(board_uri): Path<String>) 
         .collect();
 
     let template = ThreadsTemplate {
-        board_uri,
-        board_name: board.name,
+        board,
         threads_posts,
     };
     Html(template.render().unwrap())

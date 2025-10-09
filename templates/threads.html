@@ -2,14 +2,33 @@
 <html lang="ru_RU">
 <head>
     <meta charset="utf-8">
-    <title>/{{ board_uri }}/ - pts_board</title>
+    <title>/{{ board.uri }}/ - pts_board</title>
 </head>
 <body>
-{% if let Some(board_name) = board_name %}
-<h1>/{{ board_uri }}/ - {{ board_name }}</h1>
+{% if let Some(name) = board.name %}
+<h1>/{{ board.uri }}/ - {{ name }}</h1>
 {% else %}
-<h1>/{{ board_uri }}/</h1>
+<h1>/{{ board.uri }}/</h1>
 {% endif %}
+
+<form action="/create_thread" method="POST">
+    <input name="board_id" type="hidden" value="{{ board.id }}">
+
+    <div>
+        <label for="title">Заголовок:</label>
+        <input id="title" name="title" type="text">
+    </div>
+
+    <div>
+        <label for="text">Текст:</label>
+        <textarea id="text" name="text" required></textarea>
+    </div>
+
+    <!-- <input type="file" name="image"> -->
+    <!-- Если есть файл, не забудьте <form enctype="multipart/form-data"> -->
+
+    <button type="submit">Создать тред</button>
+</form>
 
 {% for thread_posts in threads_posts %}
 <div class="thread">

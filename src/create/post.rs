@@ -1,6 +1,6 @@
 use crate::AppState;
 use crate::entity::post;
-use axum::Json;
+use axum::Form;
 use axum::extract::State;
 use rand::Rng;
 use sea_orm::{ActiveModelTrait, Set};
@@ -19,7 +19,7 @@ const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                         0123456789)(*&^%$#@!~";
 const PASSWORD_LEN: usize = 22;
 
-pub async fn create_post(State(state): State<AppState>, Json(payload): Json<CreatePost>) -> String {
+pub async fn create_post(State(state): State<AppState>, Form(payload): Form<CreatePost>) -> String {
     let password: String = {
         let mut rng = rand::rng();
 
@@ -42,6 +42,5 @@ pub async fn create_post(State(state): State<AppState>, Json(payload): Json<Crea
 
     let post: post::Model = post.insert(&state.db).await.unwrap();
     let msg = format!("Created post, id - {}", post.id);
-    println!("{msg}");
     msg
 }

@@ -1,6 +1,6 @@
 use crate::AppState;
 use crate::entity::thread;
-use axum::Json;
+use axum::Form;
 use axum::extract::State;
 use sea_orm::{ActiveModelTrait, Set};
 use serde::Deserialize;
@@ -14,7 +14,7 @@ pub struct CreateThread {
 
 pub async fn create_thread(
     State(state): State<AppState>,
-    Json(payload): Json<CreateThread>,
+    Form(payload): Form<CreateThread>,
 ) -> String {
     let thread = thread::ActiveModel {
         board_id: Set(payload.board_id),
@@ -27,6 +27,5 @@ pub async fn create_thread(
 
     let thread: thread::Model = thread.insert(&state.db).await.unwrap();
     let msg = format!("Created thread, id - {}", thread.id);
-    println!("{msg}");
     msg
 }
