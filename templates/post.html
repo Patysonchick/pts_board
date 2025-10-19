@@ -1,0 +1,10 @@
+<div class="post" id="post-{{ post.id }}">
+    <div class="post-header">
+        {% if let Some(title) = post.title %}
+        <h3>{{ title }}</h3>
+        {% endif %}
+    </div>
+    <div class="post-body">
+        <p>{{ post.text }}</p>
+    </div>
+</div>

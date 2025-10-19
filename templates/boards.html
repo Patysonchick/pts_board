@@ -3,15 +3,25 @@
 <head>
     <meta charset="utf-8">
     <title>Boards - pts_board</title>
+
+    <link href="/favicon.ico" rel="icon" type="image/x-icon">
 </head>
 <body>
 <h1>Boards list:</h1>
 <table>
+    <tr>
+        <td>Id</td>
+        <td>Uri</td>
+        <td>Name</td>
+        <td>Description</td>
+        <td>Thread limit</td>
+        <td>Created at</td>
+    </tr>
+
     {% for board in boards %}
     <tr>
         <td>{{ board.id }}</td>
-
-        <td><a href="/{{ board.uri }}">/{{ board.uri }}/</a></td>
+        <td><a href="/{{ board.uri }}">/{{ board.uri }}</a></td>
 
         {% if let Some(name) = board.name %}
         <td>{{ name }}</td>

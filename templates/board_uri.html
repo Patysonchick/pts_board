@@ -2,16 +2,19 @@
 <html lang="ru_RU">
 <head>
     <meta charset="utf-8">
-    <title>/{{ board.uri }}/ - pts_board</title>
+    <title>/{{ board.uri }} - pts_board</title>
+
+    <link href="/static/styles.css" rel="stylesheet">
+    <link href="/favicon.ico" rel="icon" type="image/x-icon">
 </head>
 <body>
 {% if let Some(name) = board.name %}
-<h1>/{{ board.uri }}/ - {{ name }}</h1>
+<h1>/{{ board.uri }} - {{ name }}</h1>
 {% else %}
 <h1>/{{ board.uri }}/</h1>
 {% endif %}
 
-<form action="/create_thread" method="POST">
+<form action="/api/create_thread" method="POST">
     <input name="board_id" type="hidden" value="{{ board.id }}">
 
     <div>
@@ -31,23 +34,9 @@
 </form>
 
 {% for thread_posts in threads_posts %}
-<div class="thread">
-    {% if let Some(thread_title) = thread_posts.thread.title %}
-    <h2>{{ thread_title }}</h2>
-    {% endif %}
-
-    <p>{{ thread_posts.thread.text }}</p>
-
-    {% for post in thread_posts.posts %}
-    <div class="post">
-        {% if let Some(title) = post.title %}
-        <h3>{{ title }}</h3>
-        {% endif %}
-
-        <p>{{ post.text }}</p>
-    </div>
-    {% endfor %}
-</div>
+{% let thread=thread_posts.thread %}
+{% let posts=thread_posts.posts %}
+{% include "thread.html" %}
 {% endfor %}
 </body>
 </html>

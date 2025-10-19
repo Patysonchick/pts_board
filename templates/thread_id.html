@@ -2,11 +2,12 @@
 <html lang="ru_RU">
 <head>
     <meta charset="utf-8">
-    <title>pts_board</title>
+    <title>Thread №{{ thread.id }} - pts_board</title>
 
+    <link href="/static/styles.css" rel="stylesheet">
     <link href="/favicon.ico" rel="icon" type="image/x-icon">
 </head>
 <body>
-<h1>Hello from {{ name }}!</h1>
+{% include "thread.html" %}
 </body>
 </html>

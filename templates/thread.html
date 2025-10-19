@@ -1,0 +1,14 @@
+<div class="thread" id="thread-{{ thread.id }}">
+    <div class="thread-header">
+        {% if let Some(title) = thread.title %}
+        <h2>{{ title }}</h2>
+        {% endif %}
+    </div>
+    <div class="thread-body">
+        <p>{{ thread.text }}</p>
+    </div>
+
+    {% for post in posts %}
+    {% include "post.html" %}
+    {% endfor %}
+</div>

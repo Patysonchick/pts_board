@@ -6,7 +6,7 @@ use axum::response::Html;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 
 #[derive(Template)]
-#[template(path = "threads.html")]
+#[template(path = "board_uri.html")]
 struct ThreadsTemplate {
     board: board::Model,
     threads_posts: Vec<ThreadPosts>,
@@ -19,14 +19,14 @@ struct ThreadPosts {
 
 pub async fn list(State(state): State<AppState>, Path(board_uri): Path<String>) -> Html<String> {
     // TODO! обязательно сделать проверку на наличие нужной доски, обработать ошибку
-    let board: board::Model = board::Entity::find()
+    let board = board::Entity::find()
         .filter(board::Column::Uri.eq(&board_uri))
         .one(&state.db)
         .await
         .unwrap()
         .unwrap();
 
-    let threads_posts: Vec<(thread::Model, Vec<post::Model>)> = thread::Entity::find()
+    let threads_posts = thread::Entity::find()
         .filter(thread::Column::BoardId.eq(board.id))
         .find_with_related(post::Entity)
         .all(&state.db)

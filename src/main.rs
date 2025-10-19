@@ -1,16 +1,14 @@
-mod create;
+mod api;
 mod entity;
-mod index;
-mod list;
+mod page;
 
-use crate::create::{post::create_post, thread::create_thread};
-use crate::index::index;
-use crate::list::{boards, threads};
+use crate::page::{board_uri, boards, index::index, thread_id};
 use axum::{
     Router,
     routing::{get, post},
 };
 use sea_orm::{Database, DatabaseConnection};
+use tower_http::services::{ServeDir, ServeFile};
 
 #[derive(Clone)]
 struct AppState {
@@ -25,12 +23,18 @@ async fn main() {
             .expect("Failed to connect to db"),
     };
 
+    let api_routes = Router::new()
+        .route("/create_thread", post(api::thread::create))
+        .route("/create_post", post(api::post::create));
+
     let app = Router::new()
         .route("/", get(index))
         .route("/boards", get(boards::list))
-        .route("/{board_uri}", get(threads::list))
-        .route("/create_thread", post(create_thread))
-        .route("/create_post", post(create_post))
+        .route("/{board_uri}", get(board_uri::list))
+        .route("/thread/{thread_id}", get(thread_id::list))
+        .nest("/api", api_routes)
+        .nest_service("/static", ServeDir::new("static"))
+        .route_service("/favicon.ico", ServeFile::new("static/favicon.ico"))
         .with_state(shared_state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3229").await.unwrap();
@@ -40,6 +44,8 @@ async fn main() {
 // Цели
 // TODO! добавить отправку ПОСТОВ
 // TODO! сделать капчу
-// TODO! сделать текстборду имиджбордой(прикрутить к тредам/постам пикчи)
-// TODO! Сделать генерацию страниц не каждый раз, а только при изменении страницы(появление новой доски, треда, поста)
 // TODO! Написать нормальные css-ки, чтобы не выглядело вырвиглазно
+// TODO! сделать README.md с документацией
+// TODO! сделать текстборду имиджбордой(прикрутить к тредам/постам пикчи)
+// TODO! добавить отправку с задержкой(например в начале каждой минуты-10 минут)
+// TODO! Сделать генерацию страниц не каждый раз, а только при изменении страницы(появление новой доски, треда, поста)

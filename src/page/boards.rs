@@ -12,7 +12,7 @@ struct BoardsTemplate {
 }
 
 pub async fn list(State(state): State<AppState>) -> Html<String> {
-    let boards: Vec<board::Model> = board::Entity::find()
+    let boards = board::Entity::find()
         .order_by_asc(board::Column::Id)
         .all(&state.db)
         .await
