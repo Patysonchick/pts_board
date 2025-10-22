@@ -14,22 +14,18 @@
 <h1>/{{ board.uri }}/</h1>
 {% endif %}
 
+<!-- <form enctype="multipart/form-data"> -->
 <form action="/api/create_thread" method="POST">
     <input name="board_id" type="hidden" value="{{ board.id }}">
-
     <div>
         <label for="title">Заголовок:</label>
         <input id="title" name="title" type="text">
     </div>
-
     <div>
         <label for="text">Текст:</label>
         <textarea id="text" name="text" required></textarea>
     </div>
-
     <!-- <input type="file" name="image"> -->
-    <!-- Если есть файл, не забудьте <form enctype="multipart/form-data"> -->
-
     <button type="submit">Создать тред</button>
 </form>
 

@@ -4,10 +4,14 @@ use axum::Form;
 use axum::extract::State;
 use sea_orm::{ActiveModelTrait, Set};
 use serde::Deserialize;
+use serde_with::NoneAsEmptyString;
+use serde_with::serde_as;
 
+#[serde_as]
 #[derive(Deserialize)]
 pub struct CreateThread {
     board_id: i32,
+    #[serde_as(as = "NoneAsEmptyString")]
     title: Option<String>,
     text: String,
 }

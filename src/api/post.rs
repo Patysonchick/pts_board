@@ -6,12 +6,17 @@ use chrono::Utc;
 use rand::Rng;
 use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 use serde::Deserialize;
+use serde_with::NoneAsEmptyString;
+use serde_with::serde_as;
 use tokio::join;
 
+#[serde_as]
 #[derive(Deserialize)]
 pub struct CreatePost {
     thread_id: i32,
+    #[serde_as(as = "NoneAsEmptyString")]
     parent_id: Option<i32>,
+    #[serde_as(as = "NoneAsEmptyString")]
     title: Option<String>,
     text: String,
 }
