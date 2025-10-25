@@ -5,6 +5,8 @@ Cargo.lock
 **/*.rs.bk
 *.pdb
 
+*.env
+
 .idea
 *.iml
 out

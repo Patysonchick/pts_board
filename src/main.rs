@@ -8,7 +8,11 @@ use axum::{
     routing::{get, post},
 };
 use sea_orm::{Database, DatabaseConnection};
+use std::env;
 use tower_http::services::{ServeDir, ServeFile};
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
+use tracing_subscriber::{EnvFilter, fmt};
 
 #[derive(Clone)]
 struct AppState {
@@ -16,12 +20,18 @@ struct AppState {
 }
 
 #[tokio::main]
-async fn main() {
-    let shared_state = AppState {
-        db: Database::connect("postgres://admin:qwe123@127.0.0.1:5432/database") // TODO! сделать настройку подключения через .env
-            .await
-            .expect("Failed to connect to db"),
-    };
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    dotenvy::dotenv()?;
+
+    tracing_subscriber::registry()
+        .with(fmt::layer())
+        .with(EnvFilter::from_default_env())
+        .init();
+
+    let db = Database::connect(env::var("DATABASE_URL")?).await?;
+    tracing::info!("Database connection established");
+
+    let shared_state = AppState { db };
 
     let api_routes = Router::new()
         .route("/create_thread", post(api::thread::create))
@@ -37,13 +47,21 @@ async fn main() {
         .route_service("/favicon.ico", ServeFile::new("static/favicon.ico"))
         .with_state(shared_state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3229").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    let address = env::var("ADDRESS")?;
+    tracing::info!("Server listening on {}", address);
+
+    let listener = tokio::net::TcpListener::bind(address).await?;
+    axum::serve(listener, app).await?;
+
+    tracing::info!("Server shutdown complete");
+    Ok(())
 }
 
 // Цели
 // TODO! сделать обработку ошибок, вывод ошибок пользователю
 // TODO! сделать капчу
+// TODO! сделать логирование лучше
+// TODO! разобраться со span(tracing)
 // TODO! Написать нормальные css-ки, чтобы не выглядело вырвиглазно
 // TODO! сделать README.md с документацией
 // TODO! сделать текстборду имиджбордой(прикрутить к тредам/постам пикчи)
