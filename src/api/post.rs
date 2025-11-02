@@ -26,7 +26,7 @@ const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                         0123456789)(*&^%$#@!~";
 const PASSWORD_LEN: usize = 22;
 
-// TODO! добавиить логи
+// TODO! добавить логи
 pub async fn create(
     State(state): State<AppState>,
     Form(payload): Form<CreatePost>,
