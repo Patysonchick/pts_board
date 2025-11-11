@@ -1,7 +1,8 @@
-use crate::AppState;
 use crate::entity::thread;
+use crate::{AppState, api};
 use axum::Form;
 use axum::extract::State;
+use axum::response::Redirect;
 use sea_orm::{ActiveModelTrait, Set};
 use serde::Deserialize;
 use serde_with::NoneAsEmptyString;
@@ -16,8 +17,11 @@ pub struct CreateThread {
     text: String,
 }
 
-// TODO! сделать обработку ошибок, редирект, логи
-pub async fn create(State(state): State<AppState>, Form(payload): Form<CreateThread>) -> String {
+// TODO! добавить логи
+pub async fn create(
+    State(state): State<AppState>,
+    Form(payload): Form<CreateThread>,
+) -> Result<Redirect, api::Error> {
     let thread = thread::ActiveModel {
         board_id: Set(payload.board_id),
         title: Set(payload.title),
@@ -27,7 +31,9 @@ pub async fn create(State(state): State<AppState>, Form(payload): Form<CreateThr
         ..Default::default()
     };
 
-    let thread = thread.insert(&state.db).await.unwrap();
-    let msg = format!("Created thread, id - {}", thread.id);
-    msg
+    let thread = thread.insert(&state.db).await.map_err(api::Error::DbErr)?;
+    tracing::info!("Created thread №{}", thread.id);
+
+    let redirect_url = format!("/thread/{}", thread.id);
+    Ok(Redirect::to(&redirect_url))
 }
