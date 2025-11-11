@@ -3,7 +3,7 @@ use crate::entity::{board, post, thread};
 use askama::Template;
 use axum::extract::{Path, State};
 use axum::response::Html;
-use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
+use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QueryOrder};
 
 #[derive(Template)]
 #[template(path = "board_uri.html")]
@@ -29,6 +29,8 @@ pub async fn list(State(state): State<AppState>, Path(board_uri): Path<String>) 
     let threads_posts = thread::Entity::find()
         .filter(thread::Column::BoardId.eq(board.id))
         .find_with_related(post::Entity)
+        .order_by_asc(thread::Column::Id)
+        .order_by_asc(post::Column::Id)
         .all(&state.db)
         .await
         .unwrap();

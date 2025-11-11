@@ -3,7 +3,7 @@ use crate::entity::{post, thread};
 use askama::Template;
 use axum::extract::{Path, State};
 use axum::response::Html;
-use sea_orm::ColumnTrait;
+use sea_orm::{ColumnTrait, QueryOrder};
 use sea_orm::{EntityTrait, QueryFilter};
 
 #[derive(Template)]
@@ -23,6 +23,7 @@ pub async fn list(State(state): State<AppState>, Path(thread_id): Path<i32>) -> 
 
     let posts = post::Entity::find()
         .filter(post::Column::ThreadId.eq(thread_id))
+        .order_by_asc(post::Column::Id)
         .all(&state.db)
         .await
         .unwrap();

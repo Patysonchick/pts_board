@@ -43,6 +43,7 @@ pub async fn create(
 
     thread.bumped_at = Set(time);
     thread.update(&txn).await.map_err(api::Error::DbErr)?;
+    // TODO! может быть подумать ещё надо асинхронностью
 
     let password = {
         let mut rng = rand::rng();

@@ -1,7 +1,12 @@
 <div class="post" id="post-{{ post.id }}">
     <div class="post-header">
+        <a href="/thread/{{ post.thread_id }}#post-{{ post.id }}">№{{ post.id }}</a>
+        {% if let Some(parent_id) = post.parent_id %}
+        (child of <a href="/thread/{{ post.thread_id }}#post-{{ parent_id }}">№{{ parent_id }}</a>)
+        {% endif %}
+
         {% if let Some(title) = post.title %}
-        <h3>{{ title }}</h3>
+        <span>{{ title }}</span>
         {% endif %}
     </div>
     <div class="post-body">
