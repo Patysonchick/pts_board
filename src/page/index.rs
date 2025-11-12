@@ -1,4 +1,4 @@
-use crate::AppState;
+use crate::{AppState, api};
 use askama::Template;
 use axum::extract::State;
 use axum::response::Html;
@@ -9,10 +9,11 @@ struct IndexTemplate<'a> {
     name: &'a str,
 }
 
-pub async fn index(State(_state): State<AppState>) -> Html<String> {
-    let template = IndexTemplate { name: "pts_board" };
-
+pub async fn index(State(_state): State<AppState>) -> Result<Html<String>, api::Error> {
     // TODO! оформить как-то главную страницу, версия движка там, аптайм и т.д
 
-    Html(template.render().unwrap())
+    let page = IndexTemplate { name: "pts_board" }
+        .render()
+        .map_err(|_| api::Error::Render)?;
+    Ok(Html(page))
 }

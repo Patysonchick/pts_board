@@ -31,18 +31,18 @@ pub async fn create(
     State(state): State<AppState>,
     Form(payload): Form<CreatePost>,
 ) -> Result<Redirect, api::Error> {
-    let txn = state.db.begin().await.map_err(api::Error::DbErr)?;
+    let txn = state.db.begin().await.map_err(api::Error::Database)?;
 
     let thread = thread::Entity::find_by_id(payload.thread_id)
         .one(&txn)
         .await
-        .map_err(api::Error::DbErr)?;
+        .map_err(api::Error::Database)?;
 
     let mut thread: thread::ActiveModel = thread.ok_or_else(|| api::Error::ThreadNotFound)?.into();
     let time = Utc::now().naive_utc();
 
     thread.bumped_at = Set(time);
-    thread.update(&txn).await.map_err(api::Error::DbErr)?;
+    thread.update(&txn).await.map_err(api::Error::Database)?;
     // TODO! может быть подумать ещё надо асинхронностью
 
     let password = {
@@ -64,10 +64,9 @@ pub async fn create(
         created_at: Set(time),
         password: Set(password),
     };
-    let post = post.insert(&txn).await.map_err(api::Error::DbErr)?;
+    let post = post.insert(&txn).await.map_err(api::Error::Database)?;
 
-    txn.commit().await.map_err(api::Error::DbErr)?;
-
+    txn.commit().await.map_err(api::Error::Database)?;
     tracing::info!("Created post №{} in a thread №{}", post.id, post.thread_id);
 
     let redirect_url = format!("/thread/{}#post-{}", post.thread_id, post.id);

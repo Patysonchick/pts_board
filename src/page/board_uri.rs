@@ -1,5 +1,5 @@
-use crate::AppState;
 use crate::entity::{board, post, thread};
+use crate::{AppState, api};
 use askama::Template;
 use axum::extract::{Path, State};
 use axum::response::Html;
@@ -17,14 +17,17 @@ struct ThreadPosts {
     posts: Vec<post::Model>,
 }
 
-pub async fn list(State(state): State<AppState>, Path(board_uri): Path<String>) -> Html<String> {
+pub async fn list(
+    State(state): State<AppState>,
+    Path(board_uri): Path<String>,
+) -> Result<Html<String>, api::Error> {
     // TODO! обязательно сделать проверку на наличие нужной доски, обработать ошибку
     let board = board::Entity::find()
         .filter(board::Column::Uri.eq(&board_uri))
         .one(&state.db)
         .await
-        .unwrap()
-        .unwrap();
+        .map_err(api::Error::Database)?
+        .ok_or_else(|| api::Error::BoardNotFound)?;
 
     let threads_posts = thread::Entity::find()
         .filter(thread::Column::BoardId.eq(board.id))
@@ -33,16 +36,18 @@ pub async fn list(State(state): State<AppState>, Path(board_uri): Path<String>) 
         .order_by_asc(post::Column::Id)
         .all(&state.db)
         .await
-        .unwrap();
+        .map_err(api::Error::Database)?;
 
     let threads_posts = threads_posts
         .into_iter()
         .map(|(thread, posts)| ThreadPosts { thread, posts })
         .collect();
 
-    let template = ThreadsTemplate {
+    let page = ThreadsTemplate {
         board,
         threads_posts,
-    };
-    Html(template.render().unwrap())
+    }
+    .render()
+    .map_err(|_| api::Error::Render)?;
+    Ok(Html(page))
 }

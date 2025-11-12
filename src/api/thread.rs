@@ -31,7 +31,10 @@ pub async fn create(
         ..Default::default()
     };
 
-    let thread = thread.insert(&state.db).await.map_err(api::Error::DbErr)?;
+    let thread = thread
+        .insert(&state.db)
+        .await
+        .map_err(api::Error::Database)?;
     tracing::info!("Created thread №{}", thread.id);
 
     let redirect_url = format!("/thread/{}", thread.id);
