@@ -7,6 +7,7 @@ use axum::{
     Router,
     routing::{get, post},
 };
+use migration::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
 use std::env;
 use tower_http::services::{ServeDir, ServeFile};
@@ -21,15 +22,30 @@ struct AppState {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    dotenvy::dotenv()?;
+    match dotenvy::dotenv() {
+        Ok(_) => tracing::info!("Found .env file"),
+        Err(e) => tracing::warn!("{e}\nFailed reading .env file, using default env vars"),
+    }
 
     tracing_subscriber::registry()
         .with(fmt::layer())
         .with(EnvFilter::from_default_env())
         .init();
+    tracing::info!("Starting pts_board! )");
 
-    let db = Database::connect(env::var("DATABASE_URL")?).await?;
+    let db = match env::var("DATABASE_URL") {
+        Ok(db) => db,
+        Err(e) => {
+            tracing::error!("DATABASE_URL not found");
+            return Err(e.into());
+        }
+    };
+    let db = Database::connect(db).await?;
     tracing::info!("Database connection established");
+
+    tracing::info!("Checking for new migrations...");
+    Migrator::up(&db, None).await?;
+    tracing::info!("Migrations applied successfully!");
 
     let shared_state = AppState { db };
 
@@ -47,10 +63,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route_service("/favicon.ico", ServeFile::new("static/favicon.ico"))
         .with_state(shared_state);
 
-    let address = env::var("ADDRESS")?;
-    tracing::info!("Server listening on {}", address);
+    let listen = match env::var("LISTEN") {
+        Ok(listen) => listen,
+        Err(e) => {
+            tracing::error!("LISTEN not found");
+            return Err(e.into());
+        }
+    };
+    let port = match env::var("PORT") {
+        Ok(port) => port,
+        Err(e) => {
+            tracing::error!("PORT not found");
+            return Err(e.into());
+        }
+    };
+    let port = match port.parse::<u16>() {
+        Ok(port) => port,
+        Err(e) => {
+            tracing::error!("PORT is not number");
+            return Err(e.into());
+        }
+    };
+    tracing::info!("Server listening on {}:{}", listen, port);
 
-    let listener = tokio::net::TcpListener::bind(address).await?;
+    let listener = tokio::net::TcpListener::bind((listen, port)).await?;
     axum::serve(listener, app).await?;
 
     tracing::info!("Server shutdown complete");
